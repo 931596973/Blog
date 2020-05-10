@@ -87,10 +87,60 @@ Function.prototype.bind2 = function(context) {
 ```
 ## 构造函数效果的实现
 
-bind还有一个特点：当bind返回的函数作为构造函数使用的时候, bind时的this就会失效  
+bind还有一个特点：当bind返回的函数(即调用bind的函数)作为构造函数使用的时候, bind时的this就会失效  
 但传入的参数依然生效
 
 ```js
 Function.prototype.bind2 = function(context) {
-  
+  let self = this
+  let args = Array.prototype.slice.call(arguments, 1)
+
+  return F = function() {
+    let bindArgs = Array.prototype.slice.call(arguments)
+    self.applay(this instanceof Fcontext? this: context, bindArgs.concat(args))
+  }
+  // 修改返回函数的prototype为调用bind的函数的prototype，实例就可以继承该函数中的值
+  F.prototype = this.prototype
+  return F
 }
+```
+## 构造函数效果的优化实现
+
+直接修改F.prototype = this.prototype的时候，也会直接修改函数的prototype,   
+所以可以通过一个函数进行中转
+
+```js
+Function.prototype.bind2 = function(context) {
+  // 调用bind的不是函数的话报错
+  if (typeof this !== 'function') {
+    throw new Error('Function.prototype.bind - what is trying to be bound is not callable')
+  }
+  let self = this
+  let args = Array.prototype.slice(arguments, 1)
+  let fNOP = function() {}
+  let F = function() {
+    let bindArgs = Array.prototype.slice(arguments)
+    self.apply(this instanceof F? this: context, bindArgs.contact(args))
+  }
+  fNOP.prototype = this.prototype
+  F.prototype = new fNOP()
+  return F
+}
+```
+## 另一种写法
+
+```js
+Function.prototype.bind2 = function(context, ...args1) {
+  // 防止Function.prototype自身调用
+  if (this === Function.prototype) {
+    throw new Error('error)
+  }
+  let _this = this
+  return function F(...args2) {
+    if (this instanceof F) {
+      return new F(...args1, ...args2)
+    } 
+    return _this.apply(context, arg1s.contact(args2))
+  }
+}
+```
