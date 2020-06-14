@@ -10,3 +10,11 @@
 
 + computed 是自动监听依赖值的变化， watch 是一个过程，在监听的值变化时，触发一个回调，并做一些事情
 + 只需要动态值时用 computed, 需要知道值改变后的业务逻辑，用 watch
+
+## vue响应式原理
+
+根据Object.defineProperty设置getter、setter来追踪变化。   
+对于一个属性name，我们需要当name变化时，所有用到name的地方都更新，所以要先收集依赖，每当用到name 属性的时候都会触发getter，   
+所以在getter中收集依赖，在setting中触发依赖，（即知道name属性发生了变化）   
+每一个属性都有一个Dep数组用来存储依赖（即所有用到那么的地方都是Dep数组的一项，那么这每一项又究竟是什么呢？就是Watcher   
+
