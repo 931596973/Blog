@@ -31,3 +31,8 @@ vue无法检测property的添加或移除，因为用Object.defineProperty将属
 ## vue的data为什么必须是函数
 
 每一个vue组件都是一个vue实例，而vue中的data是原型上的属性，且属于引用类型，一个实例修改了data，会对别的实例产生影响
+
+## vue-router 的history和hash模式的区别
++ 默认情况下是hash模式，且hash模式下，url中带有#号，hash模式跳转是window监听onhashchange事件进行的
++ history模式下，url中没有#，跳转利用的是history.pushstate的API，来替换url，但服务器没有重新请求页面，所以如果F5刷新页面，   
+页面会显示404，解决办法将不存在的路径请求重定向到入口文件
